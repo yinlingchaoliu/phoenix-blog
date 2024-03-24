@@ -61,7 +61,7 @@ export default sidebar({
 		{
 			text: '归档',
 			icon: 'book',
-			prefix: 'archive/',
+			prefix: 'archives/',
 			children: 'structure',
 		},
 	],

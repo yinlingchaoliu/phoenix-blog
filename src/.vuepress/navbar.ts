@@ -54,6 +54,6 @@ export default navbar([
 	{
 		text: '归档',
 		icon: 'book',
-		link: 'archive/',
+		link: 'archives/',
 	},
 ])

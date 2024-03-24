@@ -3,7 +3,7 @@ import navbar from './navbar.js'
 import sidebar from './sidebar.js'
 
 export default hopeTheme({
-	hostname: 'https://vuepress-theme-hope-docs-demo.netlify.app',
+	hostname: 'https://yinlingchaoliu.gitee.io',
 
 	author: {
 		name: '引领潮流',
@@ -14,7 +14,7 @@ export default hopeTheme({
 
 	logo: 'https://theme-hope-assets.vuejs.press/logo.svg',
 
-	repo: 'vuepress-theme-hope/vuepress-theme-hope',
+	repo: 'https://gitee.com/yinlingchaoliu/phoenix-blog.git',
 
 	docsDir: 'src',
 

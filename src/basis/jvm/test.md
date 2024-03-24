@@ -2,9 +2,9 @@
 title: 虚拟机
 date: 2024-03-24 11:47:50
 category:
-  - android
+  - jvm
 tag:
-  - android
+  - jvm
 ---
 
 

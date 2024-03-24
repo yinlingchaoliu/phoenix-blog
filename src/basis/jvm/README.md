@@ -3,7 +3,7 @@ title: 虚拟机
 index: false
 icon: laptop-code
 category:
-  - 
+  - jvm
 ---
 
 <Catalog />

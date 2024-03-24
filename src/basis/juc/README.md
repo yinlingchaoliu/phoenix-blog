@@ -3,7 +3,7 @@ title: 并发编程
 index: false
 icon: laptop-code
 category:
-  - 
+  - juc
 ---
 
 <Catalog />

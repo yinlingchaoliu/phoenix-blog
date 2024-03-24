@@ -3,7 +3,7 @@ title: java基础
 index: false
 icon: laptop-code
 category:
-  - 
+  - java
 ---
 
 <Catalog />
