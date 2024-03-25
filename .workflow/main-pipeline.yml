@@ -1,6 +1,6 @@
 version: '1.0'
-name: master-pipeline
-displayName: MasterPipeline
+name: main-pipeline
+displayName: MainPipeline
 stages:
 # gitee-pipeline.yml 文件
   - stage: 
