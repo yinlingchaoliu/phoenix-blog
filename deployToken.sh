@@ -20,15 +20,6 @@ commit_info=`git describe --all --always --long`
 dist_path=src/.vuepress/dist # 打包生成的文件夹路径
 mkdir -p $dist_path
 
-
-token="-----BEGIN OPENSSH PRIVATE KEY-----
-b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
-QyNTUxOQAAACATl07E7Y+C4VJ44Sw3tQXIRjhqwelwMXH8/CAkw/UE9gAAAJDeIc933iHP
-dwAAAAtzc2gtZWQyNTUxOQAAACATl07E7Y+C4VJ44Sw3tQXIRjhqwelwMXH8/CAkw/UE9g
-AAAECpGoI5QrDXMrC+c8RfX0Cgn+8nx7G82hq5Nmz1a5HB4xOXTsTtj4LhUnjhLDe1BchG
-OGrB6XAxcfz8ICTD9QT2AAAADWhlYXQxM0BxcS5jb20=
------END OPENSSH PRIVATE KEY-----"
-
 # 生成静态文件
 pnpm run build
 
@@ -42,10 +33,6 @@ cp baidu_verify_codeva-xeeBvuMQbl.html $dist_path
 # 进入生成的文件夹
 cd $dist_path
 
-#给予touken授权
-mkdir -p ~/.ssh
-echo $token > ~/.ssh/id_ed25519
-
 git init
 # git config user.name ${user_name}
 # git config user.email ${user_email}
@@ -54,9 +41,9 @@ git config --global user.email 'heat13@qq.com'
 git add -A
 git commit -m "deploy, $commit_info"
 # 使用令牌上传
-#git remote add origin https://738701067a73a7b52e99b12ee13f2e87@gitee.com/yinlingchaoliu/yinlingchaoliu.git
+git remote add origin https://yinlingchaoliu:738701067a73a7b52e99b12ee13f2e87@gitee.com/yinlingchaoliu/yinlingchaoliu.git
 
-git push -f $push_addr HEAD:$push_branch
+git push --set-upstream origin master
 
 cd -
 # rm -rf $dist_path
