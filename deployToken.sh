@@ -43,7 +43,7 @@ git commit -m "deploy, $commit_info"
 # 使用令牌上传
 git remote add origin https://yinlingchaoliu:738701067a73a7b52e99b12ee13f2e87@gitee.com/yinlingchaoliu/yinlingchaoliu.git
 
-git push --set-upstream origin master
+git push -f $push_addr HEAD:$push_branch
 
 cd -
 # rm -rf $dist_path
