@@ -11,7 +11,8 @@ else
   auto=`echo ci $1`
 fi
 
-push_addr="git@gitee.com:yinlingchaoliu/yinlingchaoliu.git"
+#token url
+push_addr="https://yinlingchaoliu:738701067a73a7b52e99b12ee13f2e87@gitee.com/yinlingchaoliu/yinlingchaoliu.git"
 push_branch=master # 推送的分支
 user_name=`git log -1 --pretty=format:'%an'`
 user_email=`git log -1 --pretty=format:'%ae'`
@@ -40,10 +41,9 @@ git config --global user.name '引领潮流'
 git config --global user.email 'heat13@qq.com'
 git add -A
 git commit -m "deploy, $commit_info"
-# 使用令牌上传
-git remote add origin https://yinlingchaoliu:738701067a73a7b52e99b12ee13f2e87@gitee.com/yinlingchaoliu/yinlingchaoliu.git
 
-git push -f https://yinlingchaoliu:738701067a73a7b52e99b12ee13f2e87@gitee.com/yinlingchaoliu/yinlingchaoliu.git HEAD:$push_branch
+# 使用令牌上传
+git push -f $push_addr HEAD:$push_branch
 
 cd -
 # rm -rf $dist_path
