@@ -42,10 +42,9 @@ git config --global user.email 'heat13@qq.com'
 git add -A
 git commit -m "deploy, $commit_info"
 # 使用令牌上传
-git remote remove origin
 git remote add origin https://738701067a73a7b52e99b12ee13f2e87@gitee.com/yinlingchaoliu/yinlingchaoliu.git
 
-git push origin master
+git push -f $push_addr HEAD:$push_branch
 
 cd -
 # rm -rf $dist_path
