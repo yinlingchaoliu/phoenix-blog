@@ -46,19 +46,6 @@ export default sidebar({
 			children: 'structure',
 		},
 		{
-			text: '案例',
-			icon: 'laptop-code',
-			prefix: 'demo/',
-			link: 'demo/',
-			children: 'structure',
-		},
-		{
-			text: '文档',
-			icon: 'book',
-			prefix: 'guide/',
-			children: 'structure',
-		},
-		{
 			text: '归档',
 			icon: 'book',
 			prefix: 'archives/',

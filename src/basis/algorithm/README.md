@@ -1,7 +1,9 @@
 ---
 title: 算法
-index: false
 icon: laptop-code
+index: false
+dir:
+  order: 1
 category:
   - 算法
 ---

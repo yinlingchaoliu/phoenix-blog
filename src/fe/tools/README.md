@@ -1,7 +1,7 @@
 ---
-title: 基本功
+title: 工具
 index: false
-icon:  signs-post
+icon:  play
 category:
   - 基本功
 ---

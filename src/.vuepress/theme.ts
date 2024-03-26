@@ -31,7 +31,7 @@ export default hopeTheme({
 	// 加密配置
 	encrypt: {
 		config: {
-			'/demo/encrypt.html': ['1234'],
+			'/insight/': ['123456'],
 		},
 	},
 
@@ -50,6 +50,8 @@ export default hopeTheme({
 			suggestDelay: 300,
 		},
 
+		//开启blog
+		blog: true,
 		// 你应该自行生成自己的评论服务
 		comment: {
 			provider: 'Giscus',
@@ -60,7 +62,7 @@ export default hopeTheme({
 		},
 
 		components: {
-			components: ['Badge', 'VPCard'],
+			components: ['Badge', 'VPCard', 'VPBanner'],
 		},
 
 		// 此处开启了很多功能用于演示，你应仅保留用到的功能。

@@ -1,9 +1,9 @@
 ---
-title: 并发编程
+title: 进阶知识
+icon: laptop-code
 index: false
 dir:
-  order: 8
-icon: laptop-code
+  order: 9
 category:
   - juc
 ---

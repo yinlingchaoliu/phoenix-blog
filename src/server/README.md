@@ -1,5 +1,5 @@
 ---
-title: 若依微服务
+title: 服务端
 icon: lightbulb
 ---
 
@@ -200,9 +200,6 @@ com.ruoyi
 
 ## 架构图
 
-<!-- <img src="https://oscimg.oschina.net/oscnet/up-82e9722ecb846786405a904bafcf19f73f3.png"/> -->
-
-![架构图](./images/ruoyi.png)
 
 ## 内置功能
 

@@ -1,7 +1,9 @@
 ---
 title: 网络
-index: false
 icon: laptop-code
+index: false
+dir:
+  order: 5
 category:
   - 网络
 ---
