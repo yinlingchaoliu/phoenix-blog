@@ -1,6 +1,7 @@
 ---
 title: java内存模型
 date: 2024-03-25 22:02:09
+order: 3
 category:
   - java并发编程艺术
 tag:

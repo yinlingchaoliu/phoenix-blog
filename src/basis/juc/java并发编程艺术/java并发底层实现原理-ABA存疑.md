@@ -1,37 +1,40 @@
 ---
-title: java并发底层实现原理-ABA存疑
+title: 2.java并发底层实现原理
 date: 2024-03-25 22:02:09
+order: 2
 category:
   - java并发编程艺术
 tag:
   - archive
 ---
-#### 并发三要素
+###  1.并发三要素
 原子性：不可被中断的一个或一系列操作
 可见性： 当一个线程修改一个共享变量时，另一个线程能读到修改的值
 有序性：
 
-#### volatile应用
+### 2.volatile原理
+volatile 轻量级的synchronized，多处理器保证【可见性】
+volatile使用恰当，不会引起线程上下文切换和调度
 
-volatile 可见性
 
+#### volatile
 ```
-volatile instance = new Singleton()
+volatile Singleton instance = new Singleton()
 
 //汇编指令
-movb $0x0 , 0x1104800(%esi)
-lock addl $0x0 ,(%esp)
+0x01a3de1d: movb $0×0,0×1104800(%esi);
+0x01a3de24: lock addl $0×0,(%esp);
 ```
-Lock前缀多处理器效果
-1、将当前处理器缓存行的数据写回系统内存
-2、这个写回内存的操作会使其他CPU里缓存了该地址数据无效
+volatile原理
+1、Lock前缀指令会引起处理器缓存回写到内存
+2、一个处理器的缓存回写到内存会导致其他处理器的缓存无效
 
+### 3.synchronized原理
 
-synchronized 重量级锁
-jvm基于进入和退出Monitor对象来实现方法同步和代码块同步
-指令 monitorenter 开始
-指令 monitorexit 结束 异常处
-任何对象都有一个monitor与之关联，当一个monitor被持有，处于锁定状态
+#### 应用
+1. 对于普通同步方法，锁是当前实例对象。
+2. 对于静态同步方法，锁是当前类的Class对象
+3. 对于同步方法块，锁是Synchonized括号里配置的对象。
 
 用法
 ```
@@ -63,91 +66,75 @@ public class SyncDemo {
 }
 ```
 
-####java对象头
-1byte = 8bit
-1word(字宽) = 4 byte = 32bit
-java对象头
-![对象头](https://upload-images.jianshu.io/upload_images/5526061-372ba1f68a17b1b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-* 1 大小 
-数组类型 3 word
-非数组类型 2 word （相差arraylength）
+synchronized原理
+JVM基于进入和退出Monitor对象来实现方法同步和代码块同步
 
-* 对象头包含 MarkWord ，Address ,length
 
-Mark Word结构
-![Mark Word结构](https://upload-images.jianshu.io/upload_images/5526061-ecb81058f7340350.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+#### java对象头
+synchronized用的锁是存在Java对象头里的
 
-运行期间，Mark Word存储数据会随着锁标志位变化而变化
-![锁标志位决定存储数据](https://upload-images.jianshu.io/upload_images/5526061-bc3b629aa946405a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![java对象存储结构](images/markword1.png)
 
+![Mark Word的状态变化](images/markword2.png)
 
 #### 锁的升级与对比
-减少获得锁和释放锁带来性能消耗，引入“偏向锁”和“轻量级锁”
-锁的级别：无锁状态 < 偏向锁状态 < 轻量级锁状态 < 重量级锁状态
+1.锁的级别：无锁状态 < 偏向锁状态 < 轻量级锁状态 < 重量级锁状态
 
-锁可以升级，但不能降级
+2.锁可以升级，但不能降级 这种策略，目的是为了提高 获得锁和释放锁的效率
 
 ###### 偏向锁
-同一线程多次获得锁，采用代价更低偏向锁。
-偏向锁thread ID 在Mark Word标记
-1、第一次进入同步块，Mark Word记录偏向锁thread ID
-2、下次进入test Thread ID  成功 获得锁，失败 升级为CAS
+场景: 锁不仅不存在多线程竞争，而且总是由同一线程多次获得，为了让线程获得锁的代价更低而引入了偏向锁
+
+偏向锁加锁
+当一个线程访问同步块并获取锁时，会在对象头和栈帧中的锁记录里存储锁偏向的线程ID，
+以后该线程在进入和退出 同步块时不需要进行CAS操作来加锁和解锁
 
 偏向锁撤销
-等待竞争出现才释放锁的机制。所以当其他线程尝试竞争偏向锁时，持有偏向锁的线程才会释放锁，偏向锁的撤销，需要等待全局安全点。
 
-tip:偏向锁是java 6 7默认启用，应用程序启动存在几秒延时。
-关闭延时: -XX:BiasedLockingStartupDelay=0
-关闭偏向锁：-XX:-UseBiasedLocking=false,默认进入轻量级锁状态
+偏向锁使用了一种等到竞争出现才释放锁的机制
+
+当其他线程尝试竞争偏向锁时， 持有偏向锁的线程才会释放锁。偏向锁的撤销，需要等待全局安全点
 
 ######  轻量级锁
 
-Displaced Mark Word: 对象头Mark Word 复制到线程栈帧锁记录
+Displaced Mark Word ： JVM会先在当前线程的栈桢中创建用于存储锁记录的空间，并将对象头中的Mark Word复制到锁记录中
 
-加锁：尝试使用CAS将对象头Mark Word指向锁记录指针，成功获得锁，失败使用自旋锁
+轻量级锁加锁
+1、Displaced Mark Word
 
-解锁：使用CAS操作将Displaced Mark Word替换回到对象头，成功，表示没有竞争发生，失败存在锁竞争，升级为重量级锁
+2、线程尝试使用 CAS将对象头中的Mark Word替换为指向锁记录的指针
+
+轻量级锁解锁
+
+轻量级解锁时，会使用原子的CAS操作将Displaced Mark Word替换回到对象头
+成功，表示没有竞争发生, 失败，表示当前锁存在竞争，锁就会膨胀成重量级锁
+
+
+##### 锁升级流程
+
+![偏向锁升级](images/upgrade1.png)
+
+![轻量锁升级](images/upgrade2.png)
 
 ###### 锁的优缺点比较
-![锁的优缺点比较](https://upload-images.jianshu.io/upload_images/5526061-d777d8eb0c418568.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![锁的优缺点比较](images/upgrade3.png)
 
 
-####原子操作实现原理
+### 4.原子操作原理
+
 CAS(Compare And Swap)
 
-* 1、总线锁定保证原子性
+#### 处理器如何实现原子操作
 
-```
-多处理器同时对共享变量进行读改写操作（非原子操作）,操作完之后共享变量值会和预期不一样 
-eg:
-    i++
-```
-处理器提供LOCK#信号，当一个处理器在总线上输出此信号时，其他处理器请求将被阻塞住，该处理器可以独占共享内存
+1. 使用总线锁保证原子性 cpu操作互斥
+2. 使用缓存锁保证原子性
 
-总线锁是将CPU和内存之间通信锁定，锁定期间，其他CPU不能操作其他内存数据，总线锁开销比较大
 
-* 2、缓存锁定保证原子性
-同一时刻，只需要对某个内存地址操作原子性即可
+#### java实现原子操作
+1. 使用循环CAS实现原子操作 
+2. juc包 atomic类
+3. 使用锁机制实现原子操作 
 
-缓存一致性机制保证原子性
-阻止两个以上处理器对缓存操作
-其他处理器回写已锁定缓存，会使缓存行失效
-
-lock前缀指令
-```
-修改指令：BTS、BTR、BTC
-交换指令：XADD、CMPXCHG
-逻辑指令：ADD、OR
-```
-
-* 3、其他两种情况不能采用缓存锁定
-1、操作数据不能被缓存处理器内部，或者操作数据跨多个缓存行(cache line)
-2、不支持缓存锁定
-
-###### java如何实现原子操作
-通过锁和循环CAS的方式实现原子操作
-
-* 1、循环CAS
 jvm 中CAS操作利用CMPXCHG指令实现
 
 ```
@@ -163,8 +150,12 @@ jvm 中CAS操作利用CMPXCHG指令实现
         }
     }
 ```
-CAS三大问题
-1、ABA问题：解决问题，使用版本号，在变量前追加版本号
+
+#### CAS实现原子操作的三大问题
+1. ABA问题 :使用版本号 
+2. 循环时间长开销大
+3. 只能保证一个共享变量的原子操作
+
 AtomicStampedReference
 A->B->A => 1A->2B->3A
 ABA解决方案
@@ -184,16 +175,5 @@ ABA解决方案
     }
 ```
 
-`此处存在疑惑`
-ABA解决方案问题：stamp 版本号上限128 超过之后报错
-只能作为解决方案思路
-
-2、循环时间开销大
-3、只能保证一个共享变量原子操作
-
-* 2、锁机制实现原子操作
-偏向锁、轻量级锁、互斥锁，除偏向锁外，实现原理均采用循环CAS
-
-
-####juc编程源码
+### 5.juc编程源码
 https://github.com/yinlingchaoliu/juc

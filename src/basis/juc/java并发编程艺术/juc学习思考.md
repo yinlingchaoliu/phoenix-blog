@@ -1,6 +1,7 @@
 ---
 title: juc学习思考
 date: 2024-03-25 22:02:09
+order: 7
 category:
   - java并发编程艺术
 tag:
