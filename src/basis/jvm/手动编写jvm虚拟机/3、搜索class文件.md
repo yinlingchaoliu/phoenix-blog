@@ -1,32 +1,14 @@
 ---
 title: 3、搜索class文件
-date: 2024-03-24 11:47:50
+date: 2024-04-10 06:06:06
 category:
   - 手动编写jvm虚拟机
 tag:
-  - archive
+  - jvmgo
 ---
-[gojvm目录](https://www.jianshu.com/p/cb8fe1f365be)
-[1、搭建go环境](https://www.jianshu.com/p/9156bc2bbeba)
-[2、cmd命令行参数解析](https://www.jianshu.com/p/bea27c053053)
-[3、搜索class文件](https://www.jianshu.com/p/e76c793b5981)
-[4、添加testOption 便于单元测试](https://www.jianshu.com/p/aec9576f08f8)
-[5、解析classfile文件](https://www.jianshu.com/p/97756f2820a8)
-[6、运行时数据区](https://www.jianshu.com/p/682b548e24a3)
-[7、指令集](https://www.jianshu.com/p/9775be0d790e)
-[8、解释器](https://www.jianshu.com/p/e924ac1da848)
-[9、创建Class](https://www.jianshu.com/p/072fd852418c)
-[10、类加载器](https://www.jianshu.com/p/ba231854662d)
-[11、对象实例化new object](https://www.jianshu.com/p/f870bb0959c8)
-[12、方法调用和返回](https://www.jianshu.com/p/614cdc94ecd0)
-[13 类初始化](https://www.jianshu.com/p/f200ba4aa420)
-[14、jvm支持数组](https://www.jianshu.com/p/11ac0e3a92b3)
-[15、jvm支持字符串-数组扩展](https://www.jianshu.com/p/d27ab1534f52)
-[16、本地方法调用](https://www.jianshu.com/p/8dd487605bf4)
-[17、ClassLoader原理](https://www.jianshu.com/p/defba0b8941d)
-[18、异常处理](https://www.jianshu.com/p/4b915f356a61)
-[19、 启动jvm](https://www.jianshu.com/p/21a65fbba2e7)
-####1、知识扩展
+
+### 1、知识扩展
+
 java jvm根据类路径(class path)来搜索类，加载到内存
 
 | 按照搜索先后顺序                     | 位置          |
@@ -40,10 +22,11 @@ java jvm根据类路径(class path)来搜索类，加载到内存
 参数 -classpath /-cp
 
 go语言不需要显式实现接口
+
 defer 确保异常及时处理
 
-####2、Cmd添加jre目录
-```
+### 2、Cmd添加jre目录
+```go
 // java [-options] class [args...]
 type Cmd struct {
 	XjreOption  string   // 指定jre启动类的目录
@@ -55,9 +38,9 @@ func parseCmd() *Cmd {
 
 ```
 
-####3、类加载规则
+### 3、类加载规则
 
-```
+```go
 package classpath
 
 import (
@@ -126,16 +109,16 @@ func (self *Classpath) parseUserClasspath(cpOption string) {
 }
 ```
 
-####4、类路径查找
+### 4、类路径查找
 
-1、Entry搜索类路径
-2、DirEntry 搜索目录下类路径
-3、ZipEntry 搜索zip或jar文件形式类路径
-4、CompositeEntry 组合类路径
-5、WildcardEntry 所有通配符下类路径
+* 1、Entry搜索类路径
+* 2、DirEntry 搜索目录下类路径
+* 3、ZipEntry 搜索zip或jar文件形式类路径
+* 4、CompositeEntry 组合类路径
+* 5、WildcardEntry 所有通配符下类路径
 
 Entry 类路径查找
-```
+```go
 package classpath
 
 import "os"
@@ -182,7 +165,7 @@ func newEntry(path string) Entry {
 ```
 
 测试类
-```
+```go
 
 //测试classpath
 func parseClasspath(cmd *Cmd) {
@@ -204,6 +187,7 @@ func parseClasspath(cmd *Cmd) {
 }
 ```
 
-####实战项目地址
-https://github.com/yinlingchaoliu/jvmgo.git
+### 实战项目地址
+https://gitee.com/yinlingchaoliu/jvmgo.git
+
 提交标签classpath

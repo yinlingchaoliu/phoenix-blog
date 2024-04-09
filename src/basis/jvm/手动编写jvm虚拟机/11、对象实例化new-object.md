@@ -1,31 +1,12 @@
 ---
 title: 11、对象实例化new-object
-date: 2024-03-24 11:47:50
+date: 2024-04-10 06:06:06
 category:
   - 手动编写jvm虚拟机
 tag:
-  - archive
+  - jvmgo
 ---
-[gojvm目录](https://www.jianshu.com/p/cb8fe1f365be)
-[1、搭建go环境](https://www.jianshu.com/p/9156bc2bbeba)
-[2、cmd命令行参数解析](https://www.jianshu.com/p/bea27c053053)
-[3、搜索class文件](https://www.jianshu.com/p/e76c793b5981)
-[4、添加testOption 便于单元测试](https://www.jianshu.com/p/aec9576f08f8)
-[5、解析classfile文件](https://www.jianshu.com/p/97756f2820a8)
-[6、运行时数据区](https://www.jianshu.com/p/682b548e24a3)
-[7、指令集](https://www.jianshu.com/p/9775be0d790e)
-[8、解释器](https://www.jianshu.com/p/e924ac1da848)
-[9、创建Class](https://www.jianshu.com/p/072fd852418c)
-[10、类加载器](https://www.jianshu.com/p/ba231854662d)
-[11、对象实例化new object](https://www.jianshu.com/p/f870bb0959c8)
-[12、方法调用和返回](https://www.jianshu.com/p/614cdc94ecd0)
-[13 类初始化](https://www.jianshu.com/p/f200ba4aa420)
-[14、jvm支持数组](https://www.jianshu.com/p/11ac0e3a92b3)
-[15、jvm支持字符串-数组扩展](https://www.jianshu.com/p/d27ab1534f52)
-[16、本地方法调用](https://www.jianshu.com/p/8dd487605bf4)
-[17、ClassLoader原理](https://www.jianshu.com/p/defba0b8941d)
-[18、异常处理](https://www.jianshu.com/p/4b915f356a61)
-[19、 启动jvm](https://www.jianshu.com/p/21a65fbba2e7)
+
 创建对象需要关键指令
 
 | 指令                   | 作用           |
@@ -36,7 +17,7 @@ tag:
 | putstatic/getstatic  | 存取静态变量       |
 | Instanceof/checkcast | 判断对象是否属于某类型  |
 
-```
+```go
 public class MyObject {
 
     public static int staticVar;
@@ -59,10 +40,10 @@ public class MyObject {
 }
 ```
 
-####关键指令编写
+### 关键指令编写
 
 new
-```
+```go
 func (self *NEW) Execute(frame *rtda.Frame) {
 	cp := frame.Method().Class().ConstantPool()            // 1. 获取当前栈帧所在类的常量池
 	classRef := cp.GetConstant(self.Index).(*heap.ClassRef) // 2. 获取类符号引用
@@ -84,7 +65,7 @@ func (self *NEW) Execute(frame *rtda.Frame) {
 
 getstatic
 
-```
+```go
 func (self *GET_STATIC) Execute(frame *rtda.Frame) {
 	cp := frame.Method().Class().ConstantPool()
 	// 1. 获取字段符号引用
@@ -124,7 +105,7 @@ func (self *GET_STATIC) Execute(frame *rtda.Frame) {
 
 getfield
 
-```
+```go
 func (self *GET_FIELD) Execute(frame *rtda.Frame) {
 	cp := frame.Method().Class().ConstantPool()
 	// 1. 获取字段符号引用
@@ -159,7 +140,7 @@ func (self *GET_FIELD) Execute(frame *rtda.Frame) {
 ```
 
 checkcast
-```
+```go
 func (self *CHECK_CAST) Execute(frame *rtda.Frame) {
 	// 1. 从操作数栈获取对象引用ref
 	stack := frame.OperandStack()
@@ -180,7 +161,7 @@ func (self *CHECK_CAST) Execute(frame *rtda.Frame) {
 ```
 
 instanceof
-```
+```go
 func (self *INSTANCE_OF) Execute(frame *rtda.Frame) {
 	// 1. 从操作数栈获取对象引用ref
 	stack := frame.OperandStack()
@@ -202,7 +183,7 @@ func (self *INSTANCE_OF) Execute(frame *rtda.Frame) {
 }
 ```
 idc指令
-```
+```go
 func (self *LDC) Execute(frame *rtda.Frame) {
 	_ldc(frame, self.Index)
 }
@@ -248,8 +229,8 @@ func _ldc(frame *rtda.Frame, index uint) {
 }
 ```
 
-####编写测试类
-```
+### 编写测试类
+```go 
 
 //测试classloader
 func parseClassLoader(cmd *Cmd) {
@@ -272,11 +253,10 @@ func parseClassLoader(cmd *Cmd) {
 }
 ```
 
-shell脚本
-```
+### shell脚本
+```bash
 go run main -test "classloader" -cp test/lib/example.jar jvmgo.book.ch06.MyObject #测试classloader
 ```
 
-
-#### 实战项目地址
-https://github.com/yinlingchaoliu/jvmgo.git
+###  实战项目地址
+https://gitee.com/yinlingchaoliu/jvmgo.git

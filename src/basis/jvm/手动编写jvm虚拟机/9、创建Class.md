@@ -1,42 +1,23 @@
 ---
 title: 9、创建Class
-date: 2024-03-24 11:47:50
+date: 2024-04-10 06:06:06
 category:
   - 手动编写jvm虚拟机
 tag:
-  - archive
+  - jvmgo
 ---
-[gojvm目录](https://www.jianshu.com/p/cb8fe1f365be)
-[1、搭建go环境](https://www.jianshu.com/p/9156bc2bbeba)
-[2、cmd命令行参数解析](https://www.jianshu.com/p/bea27c053053)
-[3、搜索class文件](https://www.jianshu.com/p/e76c793b5981)
-[4、添加testOption 便于单元测试](https://www.jianshu.com/p/aec9576f08f8)
-[5、解析classfile文件](https://www.jianshu.com/p/97756f2820a8)
-[6、运行时数据区](https://www.jianshu.com/p/682b548e24a3)
-[7、指令集](https://www.jianshu.com/p/9775be0d790e)
-[8、解释器](https://www.jianshu.com/p/e924ac1da848)
-[9、创建Class](https://www.jianshu.com/p/072fd852418c)
-[10、类加载器](https://www.jianshu.com/p/ba231854662d)
-[11、对象实例化new object](https://www.jianshu.com/p/f870bb0959c8)
-[12、方法调用和返回](https://www.jianshu.com/p/614cdc94ecd0)
-[13 类初始化](https://www.jianshu.com/p/f200ba4aa420)
-[14、jvm支持数组](https://www.jianshu.com/p/11ac0e3a92b3)
-[15、jvm支持字符串-数组扩展](https://www.jianshu.com/p/d27ab1534f52)
-[16、本地方法调用](https://www.jianshu.com/p/8dd487605bf4)
-[17、ClassLoader原理](https://www.jianshu.com/p/defba0b8941d)
-[18、异常处理](https://www.jianshu.com/p/4b915f356a61)
-[19、 启动jvm](https://www.jianshu.com/p/21a65fbba2e7)
-####知识扩展
+
+### 知识扩展
 方法区存储类信息
 
 创建Class
 1、存储类信息
 2、常量池转化为运行时常量池
 
-####1、从classFile读取信息，拷贝到类中
+### 1、从classFile读取信息，拷贝到类中
 
 Class 
-```
+```go
 type Class struct {
 	accessFlags       uint16        // 类访问标志
 	name              string        // 类名（全限定）
@@ -56,7 +37,7 @@ type Class struct {
 ```
 
 1、创建class实例总方法
-```
+```go
 func newClass(cf *classfile.ClassFile) *Class {
 	class := &Class{}
 	class.accessFlags = cf.AccessFlags()
@@ -71,7 +52,7 @@ func newClass(cf *classfile.ClassFile) *Class {
 ```
 
 公共字段信息 (访问标志，访问名字，描述符)
-```
+```go
 // Field 与 Method 的父类，不是 Class 的父类
 type ClassMember struct {
 	accessFlags uint16
@@ -108,7 +89,7 @@ func (self *ClassMember) isAccessibleTo(d *Class) bool {
 ```
 
 根据 classFile 创建 字段表
-```
+```go
 type Field struct {
 	ClassMember
 	constantValueIndex uint
@@ -130,7 +111,7 @@ func newFields(class *Class, cfFields []*classfile.MemberInfo) []*Field {
 
 
 根据 classFile 创建 方法表
-```
+```go
 type Method struct {
 	ClassMember
 	maxStack  uint
@@ -154,9 +135,10 @@ func newMethods(class *Class, cfMethods []*classfile.MemberInfo) []*Method {
 
  #### 2、把 classFile 中的常量池转化为运行时常量池
 将[]classfile.ConstantInfo 转化为[]heap.Constant
+
 取值通过常量池来获得
 
-```
+```go
 // 常量项
 type Constant interface{}
 
@@ -216,10 +198,11 @@ func (self *ConstantPool) GetConstant(index uint) Constant {
 }
 ```
 类、字段、方法、接口存引用
+
 字符串 存常量池索引
 
 引用类
-```
+```go
 // 符号引用基类
 type SymRef struct {
 	cp        *ConstantPool // 符号引用所在的常量池
@@ -260,7 +243,7 @@ func newClassRef(cp *ConstantPool, classInfo *classfile.ConstantClassInfo) *Clas
 
 ```
 
-```
+```go
 type MemberRef struct {
 	SymRef
 	name       string
@@ -281,5 +264,5 @@ func (self *MemberRef) Descriptor() string {
 }
 ```
 
-#### 实战项目地址
-https://github.com/yinlingchaoliu/jvmgo.git
+### 实战项目地址
+https://gitee.com/yinlingchaoliu/jvmgo.git
