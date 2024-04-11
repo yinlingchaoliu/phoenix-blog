@@ -1,5 +1,5 @@
 ---
-title: Java juc面试题
+title: juc总结
 index: false
 category:
   - 面试题
