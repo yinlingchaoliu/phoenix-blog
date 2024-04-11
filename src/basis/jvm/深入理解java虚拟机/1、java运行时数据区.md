@@ -1,5 +1,5 @@
 ---
-title: 1、java运行时数据区 rtda
+title: 1、java运行时数据区
 date: 2024-04-10 06:06:06
 category:
   - 深入理解java虚拟机

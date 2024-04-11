@@ -22,7 +22,7 @@ export PATH=$PATH:${GOROOT}/bin
 
 # 设置gopath
 
-![image.png](images/ide.png)
+
 
 
 ### 实战项目地址
