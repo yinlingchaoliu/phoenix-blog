@@ -8,4 +8,4 @@ tag:
 ---
 
 
-![jvm总结](images/java-juc.png)
+![jvm总结](images/java-jvm.png)
