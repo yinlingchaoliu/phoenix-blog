@@ -1,5 +1,5 @@
 ---
-title: binder开篇.md
+title: binder开篇
 date: 2024-04-14 11:47:50
 order: 1
 category:
