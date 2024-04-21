@@ -1,9 +1,9 @@
 ---
-title: 若依微服务
+title: 环境搭建
 icon: lightbulb
 index: false
 dir:
-  order: 2
+  order: 1
 ---
 
 ## 定制若依
