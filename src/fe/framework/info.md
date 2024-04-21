@@ -19,9 +19,7 @@ tag:
 
 行文力求简洁,要言不烦, 便于在头脑中搭建一个思考模型，指引方向。
 
-核心在于模型，快速应用
-
-<Catalog />
+[<font color=red>本文主要参考袁辉辉的博客，在此致谢</font>](https://gityuan.com/)
 
 ### 鸣谢
 《Android系统源代码情景分析》 罗升阳
@@ -29,3 +27,5 @@ tag:
 [袁辉辉博客](https://gityuan.com/)
 
 感谢两位大佬分享，指明了安卓framework学习方向
+
+<Catalog />
