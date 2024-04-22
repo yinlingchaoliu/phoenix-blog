@@ -1,11 +1,11 @@
 ---
 title: binder架构
-date: 2024-04-14 11:47:50
-order: 8
+date: 2024-04-23 11:47:50
+order: 10
 category:
   - framework
 tag:
-  - framework
+  - binder
 ---
 
 ### binder架构

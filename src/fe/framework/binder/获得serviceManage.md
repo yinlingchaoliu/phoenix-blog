@@ -5,7 +5,7 @@ order: 3
 category:
   - framework
 tag:
-  - framework
+  - binder
 ---
 
 ### 获得serviceManage
@@ -31,7 +31,7 @@ ProcessState::self()主要工作：
 
 ### 核心代码
 
-```c++
+```c
 sp<IServiceManager> defaultServiceManager()
 {
     if (gDefaultServiceManager != NULL) return gDefaultServiceManager;
@@ -76,14 +76,14 @@ IMPLEMENT_META_INTERFACE(ServiceManager,"android.os.IServiceManager")
 ```
 
 ### 使用模版方法
-```c++
+```c
 //用于申明asInterface(),getInterfaceDescriptor()
 #define DECLARE_META_INTERFACE(INTERFACE)
 #define IMPLEMENT_META_INTERFACE(INTERFACE, NAME) //用于实现上述两个方法
 ```
 
 
-```c++
+```c
 // 实现BPServiceManager对象
 IMPLEMENT_META_INTERFACE(ServiceManager,"android.os.IServiceManager")
 
