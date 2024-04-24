@@ -8,6 +8,10 @@ tag:
   - handler
 ---
 
+### handler整体架构
+
+![handler架构](images/handler_framework.png)
+
 ### handler模型
 ![handler机制](images/handler.png)
 
