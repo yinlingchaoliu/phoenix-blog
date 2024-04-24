@@ -32,7 +32,177 @@ private native static boolean nativeIsPolling(long ptr);
 private native static void nativeSetFileDescriptorEvents(long ptr, int fd, int events);
 ```
 
-### nativeInit
+![消息队列native方法](images/queue_native.png)
+
+### 发送消息sendMessage和唤醒
+
+```java
+Looper::sendMessage->Looper::sendMessageDelayed->sendMessageAtTime
+```
+
+发送消息维护到 MessageEnvelope wake 管道
+```c
+void Looper::sendMessageAtTime(nsecs_t uptime, const sp<MessageHandler>& handler,
+        const Message& message) {
+    size_t i = 0;
+    { //请求锁
+        AutoMutex _l(mLock);
+        size_t messageCount = mMessageEnvelopes.size();
+        //找到message应该插入的位置i
+        while (i < messageCount && uptime >= mMessageEnvelopes.itemAt(i).uptime) {
+            i += 1;
+        }
+        //加入消息 维护在 mMessageEnvelopes
+        MessageEnvelope messageEnvelope(uptime, handler, message);
+        mMessageEnvelopes.insertAt(messageEnvelope, i, 1);
+        //如果当前正在发送消息，那么不再调用wake()，直接返回。
+        if (mSendingMessage) {
+            return;
+        }
+    } //释放锁
+    //当把消息加入到消息队列的头部时，需要唤醒poll循环。
+    if (i == 0) {
+        wake();
+    }
+}
+```
+
+### nativeWake 唤醒poll循环
+
+```java
+MessageQueue.enqueueMessage->nativeWake->android_os_MessageQueue_nativeWake->NativeMessageQueue::wake->Looper::wake->write(1)
+```
+
+```c
+void Looper::wake() {
+    uint64_t inc = 1;
+    // 向管道mWakeEventFd写入字符1
+    ssize_t nWrite = TEMP_FAILURE_RETRY(write(mWakeEventFd, &inc, sizeof(uint64_t)));
+    if (nWrite != sizeof(uint64_t)) {
+        if (errno != EAGAIN) {
+            ALOGW("Could not write wake signal, errno=%d", errno);
+        }
+    }
+}
+```
+
+* 写入字符'1' ,用于需要唤醒poll循环
+
+### nativePollOnce 取出消息和处理消息
+
+nativePollOnce用于提取消息队列中的消息，提取消息的调用链
+```java
+MessageQueue.next()->nativePollOnce()->android_os_MessageQueue_nativePollOnce->NativeMessageQueue::pollOnce->Looper::pollOnce()->Looper::pollInner->epoll_wait->awoken
+```
+
+* nativePollOnce 对java层阻塞及时作用，对native层队列进行读取消息和消息处理
+
+```c
+int Looper::pollInner(int timeoutMillis) {
+    int result = POLL_WAKE;
+    mResponses.clear();
+    mResponseIndex = 0;
+    mPolling = true; //即将处于idle状态
+    struct epoll_event eventItems[EPOLL_MAX_EVENTS]; //fd最大个数为16
+    //等待事件发生或者超时，在nativeWake()方法，向管道写端写入字符，则该方法会返回；
+    int eventCount = epoll_wait(mEpollFd, eventItems, EPOLL_MAX_EVENTS, timeoutMillis);
+
+    mPolling = false; //不再处于idle状态
+    mLock.lock();  //请求锁
+    if (mEpollRebuildRequired) {
+        mEpollRebuildRequired = false;
+        rebuildEpollLocked();  // epoll重建，直接跳转Done;
+        goto Done;
+    }
+    if (eventCount < 0) {
+        if (errno == EINTR) {
+            goto Done;
+        }
+        result = POLL_ERROR; // epoll事件个数小于0，发生错误，直接跳转Done;
+        goto Done;
+    }
+    if (eventCount == 0) {  //epoll事件个数等于0，发生超时，直接跳转Done;
+        result = POLL_TIMEOUT;
+        goto Done;
+    }
+
+    //循环遍历，处理所有的事件
+    for (int i = 0; i < eventCount; i++) {
+        int fd = eventItems[i].data.fd;
+        uint32_t epollEvents = eventItems[i].events;
+        if (fd == mWakeEventFd) {
+            if (epollEvents & EPOLLIN) {
+                awoken(); //已经唤醒了，则读取并清空管道数据
+            }
+        } else {
+            ssize_t requestIndex = mRequests.indexOfKey(fd);
+            if (requestIndex >= 0) {
+                int events = 0;
+                if (epollEvents & EPOLLIN) events |= EVENT_INPUT;
+                if (epollEvents & EPOLLOUT) events |= EVENT_OUTPUT;
+                if (epollEvents & EPOLLERR) events |= EVENT_ERROR;
+                if (epollEvents & EPOLLHUP) events |= EVENT_HANGUP;
+                //处理request，生成对应的reponse对象，push到响应数组
+                pushResponse(events, mRequests.valueAt(requestIndex));
+            }
+        }
+    }
+Done: ;
+    //再处理Native的Message，调用相应回调方法
+    mNextMessageUptime = LLONG_MAX;
+    while (mMessageEnvelopes.size() != 0) {
+        nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
+        const MessageEnvelope& messageEnvelope = mMessageEnvelopes.itemAt(0);
+        if (messageEnvelope.uptime <= now) {
+            {
+                sp<MessageHandler> handler = messageEnvelope.handler;
+                Message message = messageEnvelope.message;
+                mMessageEnvelopes.removeAt(0);
+                mSendingMessage = true;
+                mLock.unlock();  //释放锁
+                //todo 处理消息事件
+                handler->handleMessage(message);
+            }
+            mLock.lock();  //请求锁
+            mSendingMessage = false;
+            result = POLL_CALLBACK; // 发生回调
+        } else {
+            mNextMessageUptime = messageEnvelope.uptime;
+            break;
+        }
+    }
+    mLock.unlock(); //释放锁
+
+    //处理带有Callback()方法的Response事件，执行Reponse相应的回调方法
+    for (size_t i = 0; i < mResponses.size(); i++) {
+        Response& response = mResponses.editItemAt(i);
+        if (response.request.ident == POLL_CALLBACK) {
+            int fd = response.request.fd;
+            int events = response.events;
+            void* data = response.request.data;
+            // 处理请求的回调方法
+            int callbackResult = response.request.callback->handleEvent(fd, events, data);
+            if (callbackResult == 0) {
+                removeFd(fd, response.request.seq); //移除fd
+            }
+            response.request.callback.clear(); //清除reponse引用的回调方法
+            result = POLL_CALLBACK;  // 发生回调
+        }
+    }
+    return result;
+}
+
+void Looper::awoken() {
+    uint64_t counter;
+    //不断读取管道数据，目的就是为了清空管道内容
+    TEMP_FAILURE_RETRY(read(mWakeEventFd, &counter, sizeof(uint64_t)));
+}
+```
+
+![native消息处理](images/pollInner.png)
+
+
+### nativeInit 创建消息队列和Looper
 ```java
 new MessageQueue()->nativeInit()->android_os_MessageQueue_nativeInit->new NativeMessageQueue->new Looper()->epoll_ctl
 ```
@@ -100,20 +270,66 @@ Looper对象中的mWakeEventFd添加到epoll监控，以及mRequests也添加到
 dispose->nativeDestroy()->android_os_MessageQueue_nativeDestroy->decStrong
 ```
 
-### nativePollOnce
-
-nativePollOnce用于提取消息队列中的消息，提取消息的调用链
-```java
-next()->nativePollOnce()->android_os_MessageQueue_nativePollOnce->NativeMessageQueue.pollOnce->Looper.pollOnce()->pollInner->epoll_wait->awoken
+### 常用结构体
+Message
+```c
+struct Message {
+    Message() : what(0) { }
+    Message(int what) : what(what) { }
+    int what; // 消息类型
+};
 ```
 
+信息bean
+```c
+struct Request { //请求结构体
+    int fd;
+    int ident;
+    int events;
+    int seq;
+    sp<LooperCallback> callback;
+    void* data;
+    void initEventItem(struct epoll_event* eventItem) const;
+};
 
-### nativeWake 唤醒
+struct Response { //响应结构体
+    int events;
+    Request request;
+};
 
+struct MessageEnvelope { //信封结构体
+    MessageEnvelope() : uptime(0) { }
+    MessageEnvelope(nsecs_t uptime, const sp<MessageHandler> handler,
+            const Message& message) : uptime(uptime), handler(handler), message(message) {
+    }
+    nsecs_t uptime;
+    sp<MessageHandler> handler;
+    Message message;
+};
+```
+* MessageEnvelope正如其名字，信封。MessageEnvelope里面记录着收信人(handler)，发信时间(uptime)，信件内容(message)
+* 采用mMessageEnvelopes 维护消息列表
 
+MessageHandler 消息处理
+```c
+class MessageHandler : public virtual RefBase {
+protected:
+    virtual ~MessageHandler() { }
+public:
+    virtual void handleMessage(const Message& message) = 0;
+};
+```
 
-
-
+LooperCallback
+```c
+class LooperCallback : public virtual RefBase {
+protected:
+    virtual ~LooperCallback() { }
+public:
+    //用于处理指定的文件描述符的poll事件
+    virtual int handleEvent(int fd, int events, void* data) = 0;
+};
+```
 
 ### 源码路径
 ```markdown
