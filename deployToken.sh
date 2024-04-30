@@ -22,7 +22,7 @@ dist_path=src/.vuepress/dist # 打包生成的文件夹路径
 mkdir -p $dist_path
 
 # 生成静态文件
-pnpm run build
+npm run build
 
 #将readme license拷贝过去
 cp README.md $dist_path
