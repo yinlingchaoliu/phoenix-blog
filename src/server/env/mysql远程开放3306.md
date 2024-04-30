@@ -64,6 +64,21 @@ mysql> select * from mysql.user;
 
 
 ### mysql配置
+* this is incompatible with sql_mode=only_full_group_by解决方案
+
+修改2个文件
+```bash
+vi /etc/my.cnf
+vi /etc/mysql/mysql.conf.d/mysqld.cnf 
+```
+
+核心内容
+```bash
+[mysqld]
+sql_mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
+```
+
+完整版
 ```bash
 # Example MySQL config file for small systems.  
 #  
