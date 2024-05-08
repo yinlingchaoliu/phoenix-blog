@@ -14,7 +14,7 @@ export default hopeTheme({
 
 	logo: 'https://theme-hope-assets.vuejs.press/logo.svg',
 
-	repo: 'https://github.com/yinlingchaoliu/phoenix-blog.git',
+	repo: 'https://github.com/yinlingchaoliu/phoenix-blog',
 
 	docsDir: 'src',
 
