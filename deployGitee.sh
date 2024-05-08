@@ -11,7 +11,7 @@ else
   auto=`echo ci $1`
 fi
 
-push_addr="git@github.com:yinlingchaoliu/yinlingchaoliu.github.io.git"
+push_addr="git@gitee.com:yinlingchaoliu/yinlingchaoliu.git"
 push_branch=master # 推送的分支
 user_name=`git log -1 --pretty=format:'%an'`
 user_email=`git log -1 --pretty=format:'%ae'`

@@ -1,0 +1,45 @@
+name: CI
+
+#on: [push]
+
+# 在master分支发生push事件时触发。
+on:
+  push:
+    branches:
+      - main
+
+env: # 设置环境变量
+  TZ: Asia/Shanghai # 时区（设置时区可使页面中的`最近更新时间`使用该时区时间）
+
+jobs:
+  build: # 自定义名称
+    runs-on: ubuntu-latest # 运行在虚拟机环境ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - name: Checkout # 步骤1
+        uses: actions/checkout@v1 # 使用的动作。格式：userName/repoName。作用：检出仓库，获取源码。 官方actions库：https://github.com/actions
+      - name: Use Node.js ${{ matrix.node-version }} # 步骤2
+        uses: actions/setup-node@v1 # 作用：安装nodejs
+        with:
+          node-version: ${{ matrix.node-version }} # 版本
+      - name: Build # 步骤3 # remote_addr=`git remote get-url --push origin`
+        run: |
+          npm install
+          npm run build
+          cp README.MD  src/.vuepress/dist
+          cp baidu_verify_codeva-xeeBvuMQbl.html src/.vuepress/dist
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          REPOSITORY_NAME: yinlingchaoliu/yinlingchaoliu.github.io
+          BRANCH: master
+          FOLDER: src/.vuepress/dist
+      # 只提交到github pages也可以使用github-pages-deploy-action，详见: https://github.com/JamesIves/github-pages-deploy-action
+
+      # https://zhuanlan.zhihu.com/p/364366127
