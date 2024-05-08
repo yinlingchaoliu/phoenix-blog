@@ -1,7 +1,7 @@
-https://yinlingchaoliu.gitee.io
-https://yinlingchaoliu.gitee.io/basis/
-https://yinlingchaoliu.gitee.io/fe/
-https://yinlingchaoliu.gitee.io/server/
-https://yinlingchaoliu.gitee.io/product/
-https://yinlingchaoliu.gitee.io/bussiness/
-https://yinlingchaoliu.gitee.io/archives/
+https://yinlingchaoliu.github.io
+https://yinlingchaoliu.github.io/basis/
+https://yinlingchaoliu.github.io/fe/
+https://yinlingchaoliu.github.io/server/
+https://yinlingchaoliu.github.io/product/
+https://yinlingchaoliu.github.io/bussiness/
+https://yinlingchaoliu.github.io/archives/

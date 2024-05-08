@@ -3,7 +3,7 @@ import navbar from './navbar.js'
 import sidebar from './sidebar.js'
 
 export default hopeTheme({
-	hostname: 'https://yinlingchaoliu.gitee.io',
+	hostname: 'https://yinlingchaoliu.github.io',
 
 	author: {
 		name: '引领潮流',
@@ -14,7 +14,7 @@ export default hopeTheme({
 
 	logo: 'https://theme-hope-assets.vuejs.press/logo.svg',
 
-	repo: 'https://gitee.com/yinlingchaoliu/phoenix-blog.git',
+	repo: 'https://github.com/yinlingchaoliu/phoenix-blog.git',
 
 	docsDir: 'src',
 
@@ -37,7 +37,7 @@ export default hopeTheme({
 
 	// 多语言配置
 	metaLocales: {
-		editLink: '在 Gitee 上编辑此页',
+		editLink: '在 Github 上编辑此页',
 	},
 
 	// 如果想要实时查看任何改变，启用它。注: 这对更新性能有很大负面影响
