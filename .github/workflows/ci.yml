@@ -31,7 +31,8 @@ jobs:
         run: |
           npm install
           npm run build
-          cp README.MD  src/.vuepress/dist
+          cp README.md  src/.vuepress/dist
+          cp LICENSE  src/.vuepress/dist
           cp baidu_verify_codeva-xeeBvuMQbl.html src/.vuepress/dist
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
