@@ -4,13 +4,13 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
 异步消息模式
 
 代码实现：
 client:委托人
-```
+```java
 main(){
   Host host = new Host();
   host.request();
@@ -18,7 +18,7 @@ main(){
 ```
 
 Host宿主
-```
+```java
 public class Host{
     private final Helper helper = new Helper();
     public void request(){    
@@ -34,7 +34,7 @@ public class Host{
 ```
 
 Helper助手
-```
+```java
 public class Helper{
   public handler(){
   //耗时操作
@@ -45,7 +45,7 @@ public class Helper{
 提高吞吐量
 
 JUC
-
+```java
 ThreadFactory创建Thread
 Thread newThread(Runnable r)
 隐藏线程创建过程
@@ -72,3 +72,4 @@ ScheduledExecutorService ses = Executors.newScheduledThreadPool(5);
 ses.schedule(Runnable r, long delay, TimeUnit unit)
 
 Executors 创建线程池实例工具类
+```

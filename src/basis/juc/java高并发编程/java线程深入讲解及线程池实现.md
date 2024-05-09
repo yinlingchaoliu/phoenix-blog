@@ -4,9 +4,9 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
-####1、基础概念
+### 1、基础概念
 
 线程：程序执行流最小单元。
 线程拥有各自计数器，堆栈，局部变量的属性，并且能够访问共享内存变量
@@ -25,7 +25,7 @@ Thread.setPriority(5);
 Thread.setDaemon(true);
 ```
 
-####2、线程状态
+### 2、线程状态
 
 java线程状态6种：
 
@@ -40,7 +40,7 @@ java线程状态6种：
 
 ![线程状态图](https://upload-images.jianshu.io/upload_images/5526061-9852cf763271acad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-####3、线程函数
+### 3、线程函数
 | 函数名 | 作用 |
 | --- | --- |
 | sleep | 休眠，对象锁不会释放，不可以被interrupt（）中断 |
@@ -49,24 +49,23 @@ java线程状态6种：
 | interrupt | 中断线程 |
 | IsInterrupted | 判断线程是否被中断 |
 
-#####1）关键点：
-1. join与yield区别
+###  join与yield区别
 join 线程之间顺序执行
 yield 让出当前线程执行权
 
-2. 启动线程之前，最好构建名字，便于定位
+1. 启动线程之前，最好构建名字，便于定位
 
-3. 中断理解：线程中断的标识位，由其他线程通知该线程，若当前线程sleep,则无法中断
+2. 中断理解：线程中断的标识位，由其他线程通知该线程，若当前线程sleep,则无法中断
 
-4. 过期方法suspend、resume、stop不用。原因：陷入暂停、停止，线程不会释放占有资源，引发不确定性
+3. 过期方法suspend、resume、stop不用。原因：陷入暂停、停止，线程不会释放占有资源，引发不确定性
 
-5. 安全终止线程：
+4. 安全终止线程：
     1）interrupt中断
     2）用boolean变量控制
     
     实战示例
     
-```
+```java
 //实现demo
 private class WorkRunner implements Runnable{
     private volatile boolean switchFlag = true; // boolean变量线程安全且插入屏障
@@ -93,7 +92,7 @@ main(){
 }
 ```
      
-####对象锁
+### 对象锁
 
 | 函数名 | 作用 |
 | --- | --- |
@@ -105,9 +104,9 @@ main(){
 
 **wait，notify等方法必须放在synchroized代码块中**
 
-####经典范例
+### 经典范例
 
-#####等待-通知（生产消费者）
+### 等待-通知（生产消费者）
             
 1. 消费者
     1）获取对象的锁
@@ -135,7 +134,7 @@ synchionized(对象){
 
 ```
 
-#####实战编程
+### 实战编程
 
 1、消费者 须增加超时设计
 
@@ -158,9 +157,9 @@ public synchrionized void fetch(){
 3、线程池
 本质一个线程安全工作队列连接工作者线程和客户端线程 
 
-实现线程池的三步
+### 实现线程池的三步
 1、实现线程安全的阻塞队列 (生产者-消费者范例)
-```
+```java
 public interface BlockQueue<E>{
     void add(E e); //添加元素
     E take();      //取走元素
@@ -221,7 +220,7 @@ public ArrayBlockQueue<E> implement BlockQueue<E>{
 
 2、编写执行者可安全终止的Worker
 
-```
+```java
 public Worker<Job extend Runnable> implement Runnable{
     private volatile boolean switchFlag = true;
     private BlockQueue<Job> blockQueue;
@@ -247,7 +246,7 @@ public Worker<Job extend Runnable> implement Runnable{
 
 3、线程池框架
 
-```
+```java
 线程池接口规范
 public interface ThreadPool<Job extends Runnable>{
     //执行工作
@@ -348,3 +347,14 @@ private void creatOneWorker(){
 }
 
 ```
+
+
+ThreadPoolExecutor线程池
+
+ThreadFactory定制线程
+
+Executors.newFixedThreadPool() 固定线程数
+
+Executors.newCachedThreadPool() 缓存线程池
+
+Executors.newScheduledThreadPool() 定时线程池

@@ -4,13 +4,13 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
 提货单模式
 
 异步返回
 
-```
+```java
 //接口
 public interface Data{
   String getContent();
@@ -55,7 +55,7 @@ public class RealData implement Data{
 ```
 
 调用
-```
+```java
 main(){
 
   FutureData futureData = new FutureData();

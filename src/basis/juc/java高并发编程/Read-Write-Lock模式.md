@@ -4,11 +4,11 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
 读写锁
 
-```
+```java
 public class Data{
   private String buffer;
   private final ReadWriteLock lock = new ReadWriteLock();
@@ -37,7 +37,7 @@ public void write(String buffer){
 ReentrantReadWriteLock
 重入读写锁
 
-```
+```java
 public class ReentrantData{
 
   private String buffer;

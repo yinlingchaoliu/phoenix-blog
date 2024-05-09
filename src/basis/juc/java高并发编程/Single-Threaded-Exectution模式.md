@@ -4,12 +4,12 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
 一次只有一个线程通过
 
 示例：
-```
+```java
 public  class Gate{
   private volatile int count = 0;
   public synchionized void pass(){

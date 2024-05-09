@@ -4,11 +4,11 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
 通过标志位，停止返回线程当前操作
 
-```
+```java
 public class Balking{
     private volatile boolean initFlag=false;
 

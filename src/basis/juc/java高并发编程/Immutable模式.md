@@ -4,7 +4,7 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
 不改变模式
 
@@ -12,7 +12,7 @@ tag:
 
 技巧：在构造函数中，初始化final变量
 示例
-```
+```java
 public class Student{
   private final String name;
 

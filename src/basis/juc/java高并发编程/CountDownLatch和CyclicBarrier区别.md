@@ -4,7 +4,7 @@ date: 2024-03-24 11:47:50
 category:
   - java高并发编程
 tag:
-  - archive
+  - juc
 ---
 
 1、先并行再串行
@@ -12,7 +12,7 @@ tag:
 countDown()-->await()
 先计数减少，最后在串行
 
-```
+```java
 CountDownLatch
 
 main(){
@@ -40,7 +40,7 @@ main(){
 ```
 
 Mytask
-```
+```java
 public class MyTask implement Runnable{
 
   private  final CountDownLatch latch;
@@ -59,6 +59,8 @@ public class MyTask implement Runnable{
 
 }
 ```
+
+```bash
 输出结果
 -------AWAIT -------
 ------- count=0-------
@@ -69,6 +71,6 @@ public class MyTask implement Runnable{
 ...................
 ------- count=9-------
 ------- END-------
-
+```
 
 CyclicBarrier循环栏珊
