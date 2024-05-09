@@ -37,7 +37,7 @@ jobs:
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@releases/v3
         with:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          ACCESS_TOKEN: ${{ secrets.Gitee_Mirror_Dady }}
           REPOSITORY_NAME: yinlingchaoliu/yinlingchaoliu.github.io
           BRANCH: master
           FOLDER: src/.vuepress/dist
