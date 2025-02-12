@@ -1,0 +1,21 @@
+# REF:
+#   https://cspell.org/configuration/
+# Usage:
+#   npx cspell --no-progress .
+
+words:
+- psql
+- MPFR
+- ECODE
+- endfor
+- dotenv
+- hustcer
+- Nushell
+- justfile
+- lefthook
+- deepseek
+- linewise
+- Subshell
+- subshells
+- Infinigence
+ignorePaths:
