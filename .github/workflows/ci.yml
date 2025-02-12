@@ -1,102 +1,47 @@
-# Description:
-#   - DeepSeek code review with GitHub Actions
+name: CI
 
-name: Code Review
+#on: [push]
+
+# 在master分支发生push事件时触发。
 on:
-  pull_request_target:
-    types:
-      - opened      # Triggers when a PR is opened
-      - reopened    # Triggers when a PR is reopened
-      - synchronize # Triggers when a commit is pushed to the PR
-      # - labeled   # Triggers when a label is added to the PR
+  push:
+    branches:
+      - main
 
-# fix: GraphQL: Resource not accessible by integration (addComment) error
-permissions:
-  pull-requests: write
+env: # 设置环境变量
+  TZ: Asia/Shanghai # 时区（设置时区可使页面中的`最近更新时间`使用该时区时间）
 
 jobs:
-  setup-deepseek-review:
-    runs-on: macos-latest
-    name: Code Review
-    # Make sure the code review happens only when the PR has the label 'ai review'
-    # if: contains(github.event.pull_request.labels.*.name, 'ai review')
+  build: # 自定义名称
+    runs-on: ubuntu-latest # 运行在虚拟机环境ubuntu-latest
+    permissions:
+      contents: write
+    strategy:
+      matrix:
+        node-version: [16.x]
+
     steps:
-      - name: DeepSeek Code Review
-        uses: hustcer/deepseek-review@develop
+      - name: Checkout # 步骤1
+        uses: actions/checkout@v1 # 使用的动作。格式：userName/repoName。作用：检出仓库，获取源码。 官方actions库：https://github.com/actions
+      - name: Use Node.js ${{ matrix.node-version }} # 步骤2
+        uses: actions/setup-node@v1 # 作用：安装nodejs
         with:
-          max-length: 15000
-          # SiliconFlow's DeepSeek model
-          model: 'deepseek-ai/DeepSeek-V3'
-          base-url: 'https://api.siliconflow.cn/v1'
-          # Store the chat token in GitHub Secrets, don't expose it in the workflow file
-          chat-token: sk-crykbsqfceemnhvmnsqsatvexkgbkfpobbaabxbvlgammytl
-          sys-prompt: >
-            As a senior DevOps engineer, perform comprehensive review of shell scripts with focus on:
+          node-version: ${{ matrix.node-version }} # 版本
+      - name: Build # 步骤3 # remote_addr=`git remote get-url --push origin`
+        run: |
+          npm install
+          npm run build
+          cp README.md  src/.vuepress/dist
+          cp LICENSE  src/.vuepress/dist
+          cp baidu_verify_codeva-xeeBvuMQbl.html src/.vuepress/dist
+      # - name: Deploy 🚀
+      #   uses: JamesIves/github-pages-deploy-action@releases/v3
+      #   with:
+      #     ACCESS_TOKEN: ${{ secrets.DEPLOY_KEY }}
+      #     GIT_CONFIG_NAME: yinlingchaoliu
+      #     REPOSITORY_NAME: yinlingchaoliu/yinlingchaoliu.github.io
+      #     BRANCH: master
+      #     FOLDER: src/.vuepress/dist
+      # 只提交到github pages也可以使用github-pages-deploy-action，详见: https://github.com/JamesIves/github-pages-deploy-action
 
-            1. Core Requirements:
-            - Validate POSIX compatibility
-            - Check for proper error handling
-            - Verify safe variable usage
-            - Assess resource management
-
-            2. Security Analysis:
-            - Shell injection prevention
-            - Safe file operations
-            - Proper permissions handling
-            - Secure command execution
-
-            3. Performance Optimization:
-            - Efficient process management
-            - Proper use of subshells
-            - Stream handling best practices
-            - Avoidance of unnecessary forks
-
-            Rules:
-            - Target bash/sh compatibility
-            - Highlight security vulnerabilities
-            - Suggest performance improvements
-            - Keep feedback actionable
-            - Use technical shell terminology
-
-            Required output structure:
-            #### Script Analysis
-            - Key observations
-
-            #### Security Review
-            - Vulnerability findings
-
-            #### Optimization Suggestions
-            - Performance improvements
-
-            **Overall Quality:** Rating (1-5)
-
-            Use the following reference data:
-            ```yaml
-            checklist:
-              - Compatibility: ["POSIX compliance", "Shell-specific features", "Portability"]
-              - Security: ["Input validation", "Safe eval usage", "Permission checks"]
-              - Reliability: ["Error handling", "Exit codes", "Signal trapping"]
-              - Performance: ["Process management", "I/O operations", "Subshell usage"]
-
-            examples:
-              - issue: "❗ Unquoted variable expansion in line 42 (shell injection risk)"
-              - issue: "⚠️ Missing error handling for rm operation in line 15"
-              - suggestion: "Replace backticks with $() for better readability and nesting"
-              - suggestion: "Use exec for file handling to reduce file descriptors"
-
-            response_template: |
-              #### Script Analysis
-              - {{observations}}
-
-              {{#security_issues}}
-              #### Security Review
-              - {{security_issues}}
-              {{/security_issues}}
-
-              {{#optimizations}}
-              #### Optimization Suggestions
-              - {{optimizations}}
-              {{/optimizations}}
-
-              **Overall Quality:** {{rating}}
-            ```
+      # https://zhuanlan.zhihu.com/p/364366127

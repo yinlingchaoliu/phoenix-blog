@@ -29,7 +29,7 @@ jobs:
           model: 'deepseek-ai/DeepSeek-V3'
           base-url: 'https://api.siliconflow.cn/v1'
           # Store the chat token in GitHub Secrets, don't expose it in the workflow file
-          chat-token: sk-crykbsqfceemnhvmnsqsatvexkgbkfpobbaabxbvlgammytl
+          chat-token: ${{ secrets.CHAT_TOKEN }}
           sys-prompt: >
             As a senior DevOps engineer, perform comprehensive review of shell scripts with focus on:
 
