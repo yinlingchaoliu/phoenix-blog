@@ -57,8 +57,11 @@ jobs:
             - Stream handling best practices
             - Avoidance of unnecessary forks
 
-            4. Translation:
-            - Translate the final output into Chinese
+            4. Code specification:
+            - Pay special attention to the capitalization of code variables,
+            - Find all the frontend code (. js/. vue/. jsx)
+            - Variable naming is not written in a camel hump style
+            - Please list the variables, the number of lines of code, and the file path where the code is located
 
             Rules:
             - Target bash/sh compatibility
