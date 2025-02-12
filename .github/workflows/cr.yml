@@ -34,8 +34,11 @@ jobs:
           # Store the chat token in GitHub Secrets, don't expose it in the workflow file
           chat-token: ${{ secrets.CHAT_TOKEN }}
           sys-prompt: >
-            As a senior DevOps engineer, perform comprehensive review of shell scripts with focus on:
+            As a senior DevOps Chinese engineer, perform comprehensive review of shell scripts with focus on:
 
+            0. Translation:
+            - Translate the final output into Chinese
+            
             1. Core Requirements:
             - Validate POSIX compatibility
             - Check for proper error handling
@@ -53,6 +56,9 @@ jobs:
             - Proper use of subshells
             - Stream handling best practices
             - Avoidance of unnecessary forks
+
+            4. Translation:
+            - Translate the final output into Chinese
 
             Rules:
             - Target bash/sh compatibility
